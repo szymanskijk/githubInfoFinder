@@ -1,57 +1,58 @@
 package pl.szymanski.githubInformationFinder.Manager;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import pl.szymanski.githubInformationFinder.Entity.Branch;
 import pl.szymanski.githubInformationFinder.Entity.Repo;
+import pl.szymanski.githubInformationFinder.Entity.ResponseEntity;
+import pl.szymanski.githubInformationFinder.Exception.ExceptionEntity;
+import pl.szymanski.githubInformationFinder.Exception.UserNotFoundException;
 
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.time.Duration;
 import java.util.*;
 
 public class ResponseManager {
-    String repoName;
-    String ownerLogin;
-    Map<String, String> branchesInfo = new HashMap<>();
+    List<ResponseEntity> listOfRepositories = new ArrayList<>();
+    ResponseEntity responseEntity = new ResponseEntity();
 
-    public ResponseManager(String repoName, String ownerLogin, Map<String, String> branchesInfo) {
-        this.repoName = repoName;
-        this.ownerLogin = ownerLogin;
-        this.branchesInfo = branchesInfo;
+    public List<ResponseEntity> getResponse(String name) throws IOException, InterruptedException {
+        List<Repo> repos = getUserRepos(name);
+        for (Repo repo : repos){
+            responseEntity.setRepoName(repo.getName());
+            responseEntity.setOwnerLogin(repo.getOwner().getLogin());
+            listOfRepositories.add(responseEntity);
+        }
+
+
+
+
+        return listOfRepositories;
     }
-
-    public ResponseManager(){
-        repoName = "testowe";
-        ownerLogin = "testowy";
-        branchesInfo.put("nazwa1", "sha1");
-        branchesInfo.put("nazwa2", "sha2");
-    }
-
-    public void setBranchesInfo(String branchName, String lastCommitSha){
-        branchesInfo.put(branchName, lastCommitSha);
-    }
-
-    public String getRepoName() {
-        return repoName;
-    }
-
-    public void setRepoName(String repoName) {
-        this.repoName = repoName;
-    }
-
-    public String getOwnerLogin() {
-        return ownerLogin;
-    }
-
-    public void setOwnerLogin(String ownerLogin) {
-        this.ownerLogin = ownerLogin;
-    }
-
-    public Map<String, String> getBranchesInfo() {
-        return branchesInfo;
-    }
-
-    public void setBranchesInfo(Map<String, String> branchesInfo) {
-        this.branchesInfo = branchesInfo;
+    public List<Repo> getUserRepos(String name) throws IOException, InterruptedException {
+        HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
+//        HttpResponse<String> response = null;
+        String endPoint = "https://api.github.com/users/" + name + "/repos";
+        URI uri = URI.create(endPoint);
+        HttpRequest request = HttpRequest.newBuilder().uri(uri).build();
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+        String jsonResponse = response.body();
+        if (response.statusCode()==404) {
+            ExceptionEntity exceptionEntity = new Gson().fromJson(jsonResponse, ExceptionEntity.class);
+            ExceptionManager exceptionManager = new ExceptionManager(response.statusCode(), exceptionEntity.getMessage());
+            throw new UserNotFoundException(exceptionManager);
+        }
+        Type repoArrayList = new TypeToken<ArrayList<Repo>>(){}.getType();
+        List<Repo> repos = new Gson().fromJson(jsonResponse, repoArrayList);
+        return repos;
     }
 
 }
