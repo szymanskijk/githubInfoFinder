@@ -1,9 +1,15 @@
 package pl.szymanski.githubInformationFinder.Exception;
 
+import pl.szymanski.githubInformationFinder.Manager.ExceptionManager;
+
 import java.io.IOException;
+import java.net.http.HttpResponse;
 
-public class UserNotFoundException extends IOException {
+public class UserNotFoundException extends RuntimeException {
 
-    public UserNotFoundException(String name) {
+    public ExceptionManager response = null;
+
+    public UserNotFoundException(ExceptionManager response) {
+        this.response = response;
     }
 }
