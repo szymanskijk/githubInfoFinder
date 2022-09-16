@@ -3,6 +3,7 @@ package pl.szymanski.githubInformationFinder.Manager;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import pl.szymanski.githubInformationFinder.Entity.Branch;
+import pl.szymanski.githubInformationFinder.Entity.BranchResponseEntity;
 import pl.szymanski.githubInformationFinder.Entity.Repo;
 import pl.szymanski.githubInformationFinder.Entity.ResponseEntity;
 import pl.szymanski.githubInformationFinder.Exception.ExceptionEntity;
@@ -18,17 +19,16 @@ import java.time.Duration;
 import java.util.*;
 
 public class ResponseManager {
-    List<ResponseEntity> listOfRepositories = new ArrayList<>();
-    ResponseEntity responseEntity = new ResponseEntity();
 
     public List<ResponseEntity> getResponse(String name) throws IOException, InterruptedException {
+        List<ResponseEntity> listOfRepositories = new ArrayList<>();
         List<Repo> repos = getUserRepos(name);
         for (Repo repo : repos){
             if(repo.getFork() == false){
                 ResponseEntity responseEntity = new ResponseEntity();
                 responseEntity.setRepositoryName(repo.getName());
                 responseEntity.setOwnerLogin(repo.getOwner().getLogin());
-                responseEntity.setBranchesInfo(getRepositoryBranches(repo.getName(), name));
+                responseEntity.setListOfBranches(getRepositoryBranches(repo.getName(), name));
                 listOfRepositories.add(responseEntity);
 
             }
@@ -48,11 +48,10 @@ public class ResponseManager {
             throw new UserNotFoundException(exceptionManager);
         }
         Type repoArrayList = new TypeToken<ArrayList<Repo>>(){}.getType();
-        List<Repo> repos = new Gson().fromJson(jsonResponse, repoArrayList);
-        return repos;
+        return new Gson().fromJson(jsonResponse, repoArrayList);
     }
 
-    public Map<String, String> getRepositoryBranches(String repositoryName, String name) throws IOException, InterruptedException {
+    public List<BranchResponseEntity> getRepositoryBranches(String repositoryName, String name) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(10)).build();
         String endPoint = "https://api.github.com/repos/" + name + "/" + repositoryName + "/branches";
         URI uri = URI.create(endPoint);
@@ -62,12 +61,12 @@ public class ResponseManager {
 
         Type branchArrayList = new TypeToken<ArrayList<Branch>>(){}.getType();
         List<Branch> branches = new Gson().fromJson(jsonResponse, branchArrayList);
-        Map<String, String> repositoryBranches = new HashMap<>();
+        List<BranchResponseEntity> listOfBranchResponseEntity = new ArrayList<>();
         for (Branch branch : branches){
-            repositoryBranches.put(branch.getName(), branch.getCommit().getSha());
-            System.out.println(branch.getName() + branch.getCommit().getSha());
+            BranchResponseEntity branchResponseEntity = new BranchResponseEntity(branch.getName(), branch.getCommit().getSha());
+            listOfBranchResponseEntity.add(branchResponseEntity);
         }
-        return repositoryBranches;
+        return listOfBranchResponseEntity;
     }
 }
 

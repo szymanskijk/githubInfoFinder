@@ -1,28 +1,15 @@
 package pl.szymanski.githubInformationFinder.Entity;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ResponseEntity {
     String repositoryName;
     String ownerLogin;
-    Map<String, String> branchesInfo = new HashMap<>();
-
-    public ResponseEntity(String repoName, String ownerLogin, Map<String, String> branchesInfo) {
-        this.repositoryName = repoName;
-        this.ownerLogin = ownerLogin;
-        this.branchesInfo = branchesInfo;
-    }
+    List<BranchResponseEntity> listOfBranches;
 
     public ResponseEntity(){
-        repositoryName = "testowe";
-        ownerLogin = "testowy";
-        branchesInfo.put("nazwa1", "sha1");
-        branchesInfo.put("nazwa2", "sha2");
-    }
-
-    public void setBranchesInfo(String branchName, String lastCommitSha){
-        branchesInfo.put(branchName, lastCommitSha);
     }
 
     public String getRepositoryName() {
@@ -41,20 +28,16 @@ public class ResponseEntity {
         this.ownerLogin = ownerLogin;
     }
 
-    public Map<String, String> getBranchesInfo() {
-        return branchesInfo;
+    public List<BranchResponseEntity> getListOfBranches() {
+        return listOfBranches;
     }
 
-    public void setBranchesInfo(Map<String, String> branchesInfo) {
-        this.branchesInfo = branchesInfo;
+    public void setListOfBranches(List<BranchResponseEntity> listOfBranches) {
+        this.listOfBranches = listOfBranches;
     }
 
-    @Override
-    public String toString() {
-        return "ResponseEntity{" +
-                "repositoryName='" + repositoryName + '\'' +
-                ", ownerLogin='" + ownerLogin + '\'' +
-                ", branchesInfo=" + branchesInfo +
-                '}';
+    public void setListOfBranchesByOne(String branchName, String sha){
+        BranchResponseEntity branchResponseEntity = new BranchResponseEntity(branchName, sha);
+        this.listOfBranches.add(branchResponseEntity);
     }
 }
