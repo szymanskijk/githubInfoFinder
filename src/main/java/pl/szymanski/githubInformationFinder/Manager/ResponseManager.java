@@ -27,9 +27,11 @@ public class ResponseManager {
     public List<ResponseEntity> getResponse(String name) throws IOException, InterruptedException {
         List<Repo> repos = getUserRepos(name);
         for (Repo repo : repos){
-            responseEntity.setRepoName(repo.getName());
-            responseEntity.setOwnerLogin(repo.getOwner().getLogin());
-            listOfRepositories.add(responseEntity);
+            if(repo.getFork() == false){
+                responseEntity.setRepoName(String.valueOf(repo.getId()));
+                responseEntity.setOwnerLogin(repo.getOwner().getLogin());
+                listOfRepositories.add(responseEntity);
+            }
         }
 
 

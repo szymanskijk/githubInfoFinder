@@ -243,7 +243,7 @@ public class Repo {
     @Expose
     private String defaultBranch;
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 

@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 import pl.szymanski.githubInformationFinder.Entity.Owner;
+import pl.szymanski.githubInformationFinder.Entity.ResponseEntity;
 import pl.szymanski.githubInformationFinder.Exception.ExceptionEntity;
 import pl.szymanski.githubInformationFinder.Exception.UserNotFoundException;
 import pl.szymanski.githubInformationFinder.Manager.ExceptionManager;
@@ -29,21 +30,16 @@ import java.util.List;
 @RequestMapping("/repository")
 public class RepositoryService {
 
-    List<ResponseManager> listOfRepositories = new ArrayList<>();
+    ResponseManager responseManager = new ResponseManager();
 
 
     @GetMapping(headers = "Accept=application/json")
-    public List<ResponseManager> getByName(@RequestParam String name) throws IOException, InterruptedException {
+    public List<ResponseEntity> getByName(@RequestParam String name) throws IOException, InterruptedException {
 
-//        if (response.statusCode()==404) {
-//            ExceptionEntity exceptionEntity = new Gson().fromJson(jsonResponse, ExceptionEntity.class);
-//            ExceptionManager exceptionManager = new ExceptionManager(response.statusCode(), exceptionEntity.getMessage());
-//            throw new UserNotFoundException(exceptionManager);
-//        }
-        listOfRepositories.add(new ResponseManager());
-        listOfRepositories.add(new ResponseManager());
-        listOfRepositories.add(new ResponseManager());
-        return listOfRepositories;
+//        listOfRepositories.add(new ResponseManager());
+//        listOfRepositories.add(new ResponseManager());
+//        listOfRepositories.add(new ResponseManager());
+        return responseManager.getResponse(name);
     }
 
 }
