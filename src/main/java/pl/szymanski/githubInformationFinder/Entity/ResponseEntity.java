@@ -4,18 +4,18 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ResponseEntity {
-    String repoName;
+    String repositoryName;
     String ownerLogin;
     Map<String, String> branchesInfo = new HashMap<>();
 
     public ResponseEntity(String repoName, String ownerLogin, Map<String, String> branchesInfo) {
-        this.repoName = repoName;
+        this.repositoryName = repoName;
         this.ownerLogin = ownerLogin;
         this.branchesInfo = branchesInfo;
     }
 
     public ResponseEntity(){
-        repoName = "testowe";
+        repositoryName = "testowe";
         ownerLogin = "testowy";
         branchesInfo.put("nazwa1", "sha1");
         branchesInfo.put("nazwa2", "sha2");
@@ -25,12 +25,12 @@ public class ResponseEntity {
         branchesInfo.put(branchName, lastCommitSha);
     }
 
-    public String getRepoName() {
-        return repoName;
+    public String getRepositoryName() {
+        return repositoryName;
     }
 
-    public void setRepoName(String repoName) {
-        this.repoName = repoName;
+    public void setRepositoryName(String repositoryName) {
+        this.repositoryName = repositoryName;
     }
 
     public String getOwnerLogin() {
@@ -47,5 +47,14 @@ public class ResponseEntity {
 
     public void setBranchesInfo(Map<String, String> branchesInfo) {
         this.branchesInfo = branchesInfo;
+    }
+
+    @Override
+    public String toString() {
+        return "ResponseEntity{" +
+                "repositoryName='" + repositoryName + '\'' +
+                ", ownerLogin='" + ownerLogin + '\'' +
+                ", branchesInfo=" + branchesInfo +
+                '}';
     }
 }

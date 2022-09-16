@@ -32,14 +32,6 @@ public class RepositoryService {
 
     ResponseManager responseManager = new ResponseManager();
 
-
     @GetMapping(headers = "Accept=application/json")
-    public List<ResponseEntity> getByName(@RequestParam String name) throws IOException, InterruptedException {
-
-//        listOfRepositories.add(new ResponseManager());
-//        listOfRepositories.add(new ResponseManager());
-//        listOfRepositories.add(new ResponseManager());
-        return responseManager.getResponse(name);
-    }
-
+    public List<ResponseEntity> getByName(@RequestParam String name) throws IOException, InterruptedException {return responseManager.getResponse(name);}
 }
